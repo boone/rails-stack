@@ -15,7 +15,7 @@ Capistrano.
 * Passenger-standalone for hosting the app via nginx
 * yum-cron notifications about package updates
 
-## You Need:
+## You Need
 
 * A RHEL/CentOS 6.x server with root access
 * A Rails app (MySQL-based) set up to deploy with Capistrano
@@ -85,19 +85,20 @@ commit it to your repo.
 }
 ```
 
-## Deploy Your App
+## Deploy Your Rails App
 
 ```
 cap deploy:migrations
 ```
 
-If this completes successfully, your Rails app should be running on your server, just like that.
+If this completes successfully, your Rails app should be running on your server,
+just like that.
 
 ## Maintenance
 
 All you should have to do to maintain this setup is:
 
-* Keep the server up to date with CentOS package updates.
+* Keep the server up to date with system package updates.
 * Keep your app up to date with Rails and other gem updates.
 
 ## Contributing
@@ -112,6 +113,4 @@ GitHub issues and especially pull requests welcome.
 
 ## Contact
 
-http://boonedocks.net
-
-{@boonedocks}[https://twitter.com/boonedocks] on Twitter
+[@boonedocks](https://twitter.com/boonedocks) on Twitter
