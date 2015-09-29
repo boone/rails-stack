@@ -71,8 +71,6 @@ ansible-playbook -i production site.yml
 If all goes well, it should totally configure the server for your app, and you
 should see a placeholder site at the server's IP address.
 
-IMAGE
-
 Add a `Passengerfile.json` to your app (set the app name on the last line) and
 commit it to your repo.
 
