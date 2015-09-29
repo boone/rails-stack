@@ -1,0 +1,8 @@
+---
+- include: sshd.yml
+- include: unix_stuff.yml
+- include: iptables.yml
+- include: yum_packages.yml
+- include: passenger.yml
+- include: mysql.yml
+- include: yum-cron.yml

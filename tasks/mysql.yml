@@ -1,0 +1,46 @@
+# Initially based on http://stackoverflow.com/a/30448021
+---
+- name: Install the MySQL packages
+  yum: name={{ item }} state=present
+  with_items:
+    - mysql-server
+    - MySQL-python
+    - mysql-devel
+
+- name: Start MySQL
+  service: name=mysqld state=started
+
+- name: Enable mysql
+  service: name=mysqld enabled=on
+
+- name: Copy the configuration file (my.cnf)
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+  notify: restart mysql
+
+- name: Update MySQL root password for all root accounts
+  mysql_user: name=root host={{ item }} password={{ mysql_root_password }} priv=*.*:ALL,GRANT state=present check_implicit_admin=yes
+  with_items:
+    - "{{ ansible_nodename }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Copy the root credentials as .my.cnf file
+  template: src=root.cnf.j2 dest=~/.my.cnf mode=0600
+
+- name: Ensure Anonymous user(s) are not in the database
+  mysql_user: name='' host={{ item }} state=absent
+  with_items:
+    - "{{ ansible_nodename }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Remove the test database
+  mysql_db: name=test state=absent
+
+- name: Add the app database, if necessary
+  mysql_db: name={{ app_name }}_production state=present
+
+- name: Add the app database user
+  mysql_user: name={{ app_name }} password="{{ mysql_user_password }}" priv=*.*:USAGE/{{ app_name }}_production.*:ALL

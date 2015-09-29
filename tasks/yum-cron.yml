@@ -1,0 +1,17 @@
+---
+- name: Ensure yum-cron present
+  yum: name=yum-cron state=present
+
+- name: Determine contact email for yum-cron
+  local_action: command git config user.email
+  register: git_result
+
+- name: Set contact_email from git_result
+  set_fact: contact_email={{ git_result.stdout }}
+
+- name: Copy the configuration file (yum-cron)
+  template: src=yum-cron.j2 dest=/etc/sysconfig/yum-cron
+  notify: restart yum-cron
+
+- name: Enable yum-cron service
+  service: name=yum-cron enabled=on

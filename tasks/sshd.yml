@@ -1,0 +1,7 @@
+---
+- name: Copy the configuration file (sshd_config)
+  template: src=sshd_config.j2 dest=/etc/ssh/sshd_config
+  notify: restart sshd
+
+- name: Enable sshd
+  service: name=sshd enabled=on

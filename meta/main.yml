@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: Mike Boone
+  description: Easily setup a Rails application on CentOS.
+  company: Yellow Rocket, LLC
+  license: MIT
+  min_ansible_version: 1.9
+  platforms:
+  - name: EL
+    versions:
+    - 6
+  categories:
+  - web
+dependencies:
+  - { role: rvm_io.rvm1-ruby,
+      tags: ruby,
+      rvm1_rubies: ['ruby-2.2.3'],
+      rvm1_install_flags: '--auto-dotfiles --user-install',
+      rvm1_delete_ruby: ruby-2.2.2 }

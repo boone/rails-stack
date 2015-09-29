@@ -1,0 +1,12 @@
+# Generic yum packages we want
+---
+- name: Install common yum packages
+  yum: name={{ item }} state=present
+  with_items:
+    - epel-release
+    - git
+    - lsof
+    - mailx
+
+- name: Install nodejs from epel
+  yum: name=nodejs enablerepo=epel state=present

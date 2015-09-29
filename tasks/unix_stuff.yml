@@ -1,0 +1,39 @@
+---
+- set_fact: ssh_public_key={{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub
+- user: name={{ app_name }} shell=/bin/bash update_password=always password={{ unix_password|password_hash('sha512') }}
+- authorized_key: user={{ app_name }} key="{{ lookup('file', ssh_public_key) }}"
+- file: dest=/home/{{ app_name }}/tmp mode=700 owner={{ app_name }} group={{ app_name }} state=directory
+- file: dest=/home/{{ app_name }}/app mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+- file: dest=/home/{{ app_name }}/app/releases mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+- file: dest=/home/{{ app_name }}/app/shared mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+- file: dest=/home/{{ app_name }}/app/shared/config mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+- template: src=database.yml.j2 dest=/home/{{ app_name }}/app/shared/config/database.yml mode=660
+
+# setup temporary deploy with a temporary index.html page so it can be tested before a full cap deploy
+- name: Check if /home/app/current symlink exists
+  stat: path=/home/{{ app_name }}/app/current
+  register: current_symlink
+
+- name: Setup the release directory (if the current symlink doesn't exist)
+  file: dest=/home/{{ app_name }}/app/releases mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+  when: not current_symlink.stat.exists
+
+- name: Setup the deploy directory (if the current symlink doesn't exist)
+  file: dest=/home/{{ app_name }}/app/releases/20150101000000 mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+  when: not current_symlink.stat.exists
+
+- name: Copy the Passengerfile (if the current symlink doesn't exist)
+  template: src=Passengerfile.json.j2 dest=/home/{{ app_name }}/app/releases/20150101000000/Passengerfile.json
+  when: not current_symlink.stat.exists
+
+- name: Setup the public directory (if the current symlink doesn't exist)
+  file: dest=/home/{{ app_name }}/app/releases/20150101000000/public mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+  when: not current_symlink.stat.exists
+
+- name: Copy the index.html (if the current symlink doesn't exist)
+  template: src=index.html.j2 dest=/home/{{ app_name }}/app/releases/20150101000000/public/index.html
+  when: not current_symlink.stat.exists
+
+- name: Setup the current symlink (if the current symlink doesn't exist)
+  file: src=/home/{{ app_name }}/app/releases/20150101000000 dest=/home/{{ app_name }}/app/current state=link
+  when: not current_symlink.stat.exists
