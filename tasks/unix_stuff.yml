@@ -7,7 +7,7 @@
 - file: dest=/home/{{ app_name }}/app/releases mode=755 owner={{ app_name }} group={{ app_name }} state=directory
 - file: dest=/home/{{ app_name }}/app/shared mode=755 owner={{ app_name }} group={{ app_name }} state=directory
 - file: dest=/home/{{ app_name }}/app/shared/config mode=755 owner={{ app_name }} group={{ app_name }} state=directory
-- template: src=database.yml.j2 dest=/home/{{ app_name }}/app/shared/config/database.yml mode=660
+- template: src=database.yml.j2 dest=/home/{{ app_name }}/app/shared/config/database.yml mode=660 owner={{ app_name }} group={{ app_name }}
 
 # setup temporary deploy with a temporary index.html page so it can be tested before a full cap deploy
 - name: Check if /home/app/current symlink exists
@@ -23,7 +23,7 @@
   when: not current_symlink.stat.exists
 
 - name: Copy the Passengerfile (if the current symlink doesn't exist)
-  template: src=Passengerfile.json.j2 dest=/home/{{ app_name }}/app/releases/20150101000000/Passengerfile.json
+  template: src=Passengerfile.json.j2 dest=/home/{{ app_name }}/app/releases/20150101000000/Passengerfile.json owner={{ app_name }} group={{ app_name }}
   when: not current_symlink.stat.exists
 
 - name: Setup the public directory (if the current symlink doesn't exist)
@@ -31,7 +31,7 @@
   when: not current_symlink.stat.exists
 
 - name: Copy the index.html (if the current symlink doesn't exist)
-  template: src=index.html.j2 dest=/home/{{ app_name }}/app/releases/20150101000000/public/index.html
+  template: src=index.html.j2 dest=/home/{{ app_name }}/app/releases/20150101000000/public/index.html owner={{ app_name }} group={{ app_name }}
   when: not current_symlink.stat.exists
 
 - name: Setup the current symlink (if the current symlink doesn't exist)
