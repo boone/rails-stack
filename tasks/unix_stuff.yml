@@ -1,11 +1,24 @@
 ---
-- set_fact: ssh_public_key={{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub
-- user: name={{ app_name }} shell=/bin/bash update_password=always password={{ unix_password|password_hash('sha512') }}
-- authorized_key: user={{ app_name }} key="{{ lookup('file', ssh_public_key) }}"
-- file: dest=/home/{{ app_name }}/tmp mode=700 owner={{ app_name }} group={{ app_name }} state=directory
-- file: dest=/home/{{ app_name }}/app mode=755 owner={{ app_name }} group={{ app_name }} state=directory
-- file: dest=/home/{{ app_name }}/app/releases mode=755 owner={{ app_name }} group={{ app_name }} state=directory
-- file: dest=/home/{{ app_name }}/app/shared mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+- name: Find local public key
+  set_fact: ssh_public_key={{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub
+
+- name: Set server user password
+  user: name={{ app_name }} shell=/bin/bash update_password=always password={{ unix_password|password_hash('sha512') }}
+
+- name: Setup SSH key for local connections to server user
+  authorized_key: user={{ app_name }} key="{{ lookup('file', ssh_public_key) }}"
+
+- name: Setup user tmp directory for use with deploys
+  file: dest=/home/{{ app_name }}/tmp mode=700 owner={{ app_name }} group={{ app_name }} state=directory
+
+- name: Setup app directory
+  file: dest=/home/{{ app_name }}/app mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+
+- name: Setup top-level directories
+  file: dest=/home/{{ app_name }}/app/{{ item }} mode=755 owner={{ app_name }} group={{ app_name }} state=directory
+  with_items:
+    - releases
+    - shared
 
 - name: Setup shared directories
   file: dest=/home/{{ app_name }}/app/shared/{{ item }} mode=755 owner={{ app_name }} group={{ app_name }} state=directory
@@ -14,7 +27,8 @@
     - system
     - log
 
-- template: src=database.yml.j2 dest=/home/{{ app_name }}/app/shared/config/database.yml mode=660 owner={{ app_name }} group={{ app_name }}
+- name: Create production database.yml file
+  template: src=database.yml.j2 dest=/home/{{ app_name }}/app/shared/config/database.yml mode=660 owner={{ app_name }} group={{ app_name }}
 
 # setup temporary deploy with a temporary index.html page so it can be tested before a full cap deploy
 - name: Check if /home/app/current symlink exists
