@@ -14,6 +14,6 @@ galaxy_info:
 dependencies:
   - { role: rvm_io.rvm1-ruby,
       tags: ruby,
-      rvm1_rubies: ['ruby-2.2.3'],
+      rvm1_rubies: ['ruby-2.2.4'],
       rvm1_install_flags: '--auto-dotfiles --user-install',
-      rvm1_delete_ruby: ruby-2.2.2 }
+      rvm1_delete_ruby: ruby-2.2.3 }
