@@ -4,8 +4,9 @@
   register: current_ruby
 
 - name: Install passenger gem
-  gem: name=passenger version=5.0.30 state=present user_install=no executable="/usr/local/rvm/bin/rvm-exec {{ current_ruby.stdout }} gem"
+  gem: name=passenger version=5.1.8 state=present user_install=no executable="/usr/local/rvm/bin/rvm-exec {{ current_ruby.stdout }} gem"
 
+# TODO: this installs multiple rows if you are upgrading Ruby :(
 - name: Setup Passenger in rc.local (so app comes back on reboot)
   lineinfile: dest=/etc/rc.d/rc.local state=present line="cd /home/{{ app_name }}/app && /usr/local/rvm/bin/rvm-exec {{ current_ruby.stdout }} passenger start current"
 
